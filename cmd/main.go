@@ -2,45 +2,19 @@ package main
 
 import (
 	"concorrencia/internal/fetcher"
+	"concorrencia/internal/processor"
 	"fmt"
-	"sync"
 	"time"
 )
 
 func main() {
 	start := time.Now()
 	priceChannel := make(chan float64)
-	var wg sync.WaitGroup
-	wg.Add(3)
+	done := make(chan bool)
 
-	go func() {
-		var totalPrice float64
-		countPrice := 0.0
-		for price := range priceChannel {
-			totalPrice += price
-			countPrice++
-			avgPrice := totalPrice / countPrice
-			fmt.Printf("Preço recebido: R$ %.2f | Preço médio até agora: %.2f \n", price, avgPrice)
-		}
-	}()
+	go fetcher.FetchPrices(priceChannel)
+	go processor.ShowPriceAVG(priceChannel, done)
 
-	go func() {
-		defer wg.Done()
-		priceChannel <- fetcher.FetchPricesFromSite1()
-	}()
-
-	go func() {
-		defer wg.Done()
-		priceChannel <- fetcher.FetchPricesFromSite2()
-	}()
-
-	go func() {
-		defer wg.Done()
-		priceChannel <- fetcher.FetchPricesFromSite3()
-	}()
-
-	wg.Wait()
-	close(priceChannel)
-
+	<-done
 	fmt.Printf("\nTempo total: %s", time.Since(start))
 }
