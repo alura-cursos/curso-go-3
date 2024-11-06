@@ -1,13 +1,14 @@
 package fetcher
 
 import (
+	"concorrencia/internal/models"
 	"math/rand"
 	"sync"
 	"time"
 )
 
 // Buscando preços de diferentes sites
-func FetchPrices(priceChannel chan<- float64) {
+func FetchPrices(priceChannel chan<- models.PriceDetail) {
 	var wg sync.WaitGroup
 	wg.Add(4)
 	go func() {
@@ -34,28 +35,45 @@ func FetchPrices(priceChannel chan<- float64) {
 	close(priceChannel)
 }
 
-func FetchPriceFromSite1() float64 {
+func FetchPriceFromSite1() models.PriceDetail {
 	time.Sleep(1 * time.Second)
-	return rand.Float64() * 100
+	return models.PriceDetail{
+		StoreName: "A",
+		Value:     rand.Float64() * 100,
+		TimeStamp: time.Now(),
+	}
 }
 
-func FetchPriceFromSite2() float64 {
+func FetchPriceFromSite2() models.PriceDetail {
 	time.Sleep(3 * time.Second)
-	return rand.Float64() * 100
+	return models.PriceDetail{
+		StoreName: "B",
+		Value:     rand.Float64() * 100,
+		TimeStamp: time.Now(),
+	}
 }
 
-func FetchPriceFromSite3() float64 {
+func FetchPriceFromSite3() models.PriceDetail {
 	time.Sleep(2 * time.Second)
-	return rand.Float64() * 100
+	return models.PriceDetail{
+		StoreName: "A",
+		Value:     rand.Float64() * 100,
+		TimeStamp: time.Now(),
+	}
 }
 
-func FetchMultiplePriceFromSite4(priceChannel chan<- float64) {
+func FetchMultiplePriceFromSite4(priceChannel chan<- models.PriceDetail) {
+	time.Sleep(6 * time.Second)
 	prices := []float64{
 		rand.Float64() * 100,
 		rand.Float64() * 100,
 		rand.Float64() * 100,
 	}
 	for _, price := range prices {
-		priceChannel <- price
+		priceChannel <- models.PriceDetail{
+			StoreName: "D",
+			Value:     price,
+			TimeStamp: time.Now(),
+		}
 	}
 }
