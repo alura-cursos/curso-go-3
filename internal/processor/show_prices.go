@@ -13,7 +13,7 @@ func ShowPriceAndAVG(priceChannel <-chan models.PriceDetail, done chan<- bool) {
 		totalPrice += price.Value
 		countPrices++
 		avgPrice := totalPrice / countPrices
-		fmt.Printf("Preço recebido de %s | R$ %.2f | Preço médi até agora %.2f \n", price.StoreName, price.Value, avgPrice)
+		fmt.Printf("[%s]Preço recebido de %s | R$ %.2f | Preço médi até agora %.2f \n", price.TimeStamp.Format("02-Jan 15:04:05"), price.StoreName, price.Value, avgPrice)
 	}
 	done <- true
 }
